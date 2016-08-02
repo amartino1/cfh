@@ -1,0 +1,112 @@
+
+##simple age plot 
+library(ggplot2)
+ageplot2 <- ggplot(data = cfhsimnum, aes(x = Age, y = ewhNum))
+ageplot2 <- ageplot2 + geom_point(size = 5, alpha = .02, colour = "black")
+ageplot2 = ageplot2 + geom_point(size = 4, alpha = .02, colour = "blue")
+ageplot2 <- ageplot2+ ggtitle("Age on Successful Exit with Housing")
+ageplot2 <- ageplot2 + ylab("Exit with Housing?")
+lineMod <- lm(ewhNum ~ Age, data = cfhsimnum)
+lineMod ##read slope and int from readout
+ageplot2 <- ageplot2 + geom_abline(intercept = 0.500303, slope = 0.005614)
+ageplot2
+
+##add general linear model (logistic fit)
+logRegAge <- glm(cfhsimnum$ewhNum ~ cfhsimnum$Age, family = "binomial")
+summary(logRegAge) ##get info
+##plot it
+ageplot2 <- ageplot2 + logRegAge
+
+
+
+##age probability plot
+x <- c(10,20,30,40,50,60)
+logRegAge$fitted.values
+y <- c(0.8029681, 0.7978861, 0.7933470, 0.7840439,0.7744411, 0.7695275)
+probPlot <- plot(main = "Probability of Success by Age", x,y, xlab = "Age", ylab ="Prob of EWH")
+probPlot
+
+##social worker all cases
+swPlot <- ggplot(data = swid.counts, aes(x = swid.counts$swid, y = swid.counts$y))
+swPlot <- swPlot + geom_point(color = "yellow", alpha = 0.3, size = 5)
+swPlot <- swPlot + geom_point(color = "orange", alpha = 0.2, size = 4)
+swPlot <- swPlot + ggtitle("Number of EWH/Not Cases For Each SW")
+swPlot <- swPlot + ylab("Number of Cases")
+swPlot <- swPlot + geom_point(aes(x = swid.counts$swid, y = swid.counts$n), color = "blue", alpha = 0.3, size = 5)
+swPlot <- swPlot + xlab("SWID")
+swPlot
+
+##social worker experience level by number of cases
+swExPlot <- ggplot(data = swid.counts, aes(x = swid.counts$caseTotal, y = swid.counts$yFrac))
+swExPlot <- swExPlot + geom_point(color = "yellow", alpha = 0.3, size = 5)
+swExPlot <- swExPlot + geom_point(color = "orange", alpha = 0.2, size = 4)
+swExPlot <- swExPlot + ggtitle("Success Fraction by Total Case Number")
+swExPlot <- swExPlot + ylab("Fraction of Cases EWH")
+swExPlot <- swExPlot + geom_smooth(method = "lm", se = FALSE, color = "red")
+swExPlot <- swExPlot + xlab("SW Total Cases")
+swExPlot
+swLinFit <- lm(swid.counts$yFrac ~ swid.counts$caseTotal)
+summary(swLinFit)
+
+##social worker percent success by number
+swExPlot2 <- ggplot(data = swid.counts, aes(x = swid.counts$swid, y = swid.counts$yFrac))
+swExPlot2 <- swExPlot2 + geom_point(color = "green", alpha = 0.3, size = 5)
+swExPlot2 <- swExPlot2 + geom_point(color = "blue", alpha = 0.2, size = 4)
+swExPlot2 <- swExPlot2 + ggtitle("Success Fraction by SWID")
+swExPlot2 <- swExPlot2 + ylab("Fraction of Cases EWH")
+swExPlot2 <- swExPlot2 + geom_smooth(method = "lm", se = FALSE, color = "blue")
+swExPlot2 <- swExPlot2 + xlab("SWID")
+swExPlot2
+swLinFit2 <- lm(swid.counts$yFrac ~ swid.counts$swid)
+summary(swLinFit2)
+
+
+##age boxplot
+library(ggplot2)
+ageBox <- ggplot(data = cfhsimnum, aes(x = cfhsimnum$ewhNum, y = cfhsimnum$Age, fill = cfhsimnum$ewhNum))
+ageBox <- ageBox + geom_boxplot(aes(group = cut_width(cfhsimnum$ewhNum, 0.5)), stat = "boxplot", position = "dodge", outlier.colour = "black", outlier.shape = 16, outlier.size = 2, notch = TRUE, notchwidth = 0.5)
+ageBox <- ageBox + ggtitle("EWH Success Groups By Age")
+ageBox <- ageBox + theme(legend.position = "none")
+ageBox <- ageBox + xlab("Y/N EWH Group")
+ageBox <- ageBox + ylab("Age")
+ageBox
+
+##payrate boxplot
+library(ggplot2)
+payBox <- ggplot(data = cfh.simple.722, aes(x = cfh.simple.722$ewhNum, y = cfh.simple.722$Payrate.at.Entry, fill = cfh.simple.722$ewhNum))
+payBox <- payBox + geom_boxplot(aes(group = cut_width(cfh.simple.722$ewhNum, 0.5)), stat = "boxplot", position = "dodge", outlier.colour = "black", outlier.shape = 16, outlier.size = 2, notch = TRUE, notchwidth = 0.5)
+payBox <- payBox + ggtitle("EWH Success Groups By Entry Payrate")
+payBox <- payBox + theme(legend.position = "none")
+payBox <- payBox + xlab("Y/N EWH Group")
+payBox <- payBox + ylab("Payrate ($)")
+payBox
+
+##age boxplot no low outliers
+library(ggplot2)
+ageBox2 <- ggplot(data = cfhsimple.age.outs.removed, aes(x = cfhsimple.age.outs.removed$ewhNum, y = cfhsimple.age.outs.removed$Age, fill = cfhsimple.age.outs.removed$ewhNum))
+ageBox2 <- ageBox2 + geom_boxplot(aes(group = cut_width(cfhsimple.age.outs.removed$ewhNum, 0.5)), stat = "boxplot", position = "dodge", outlier.colour = "black", outlier.shape = 16, outlier.size = 2, notch = TRUE, notchwidth = 0.5)
+ageBox2 <- ageBox2 + ggtitle("EWH Success Groups By Age")
+ageBox2 <- ageBox2 + theme(legend.position = "none")
+ageBox2 <- ageBox2 + xlab("Y/N EWH Group")
+ageBox2 <- ageBox2 + ylab("Age")
+ageBox2
+
+## family size age data- min age vs family size
+library(ggplot2)
+minsize <- ggplot(data = kidagedata, aes(x = kidagedata$Kid.Min, y = kidagedata$Size, color = kidagedata$Has.Home))
+minsize <- minsize + geom_point(alpha = 0.2, size = 5)
+minsize <- minsize + ggtitle("Family Size and Age of Youngest Child")
+minsize <- minsize + theme(legend.position = "none")
+minsize <- minsize + xlab("Age of Youngest Child (Yrs)")
+minsize <- minsize + ylab("Number of Family Members")
+minsize
+
+## same but with max age
+library(ggplot2)
+maxsize <- ggplot(data = kidagedata, aes(x = kidagedata$Kid.Max, y = kidagedata$Size, color = kidagedata$Has.Home))
+maxsize <- maxsize + geom_point(alpha = 0.2, size = 5)
+maxsize <- maxsize + ggtitle("Family Size and Age of Oldest Child")
+maxsize <- maxsize + xlab("Age of Oldest Child (Yrs)")
+maxsize <- maxsize + theme(legend.position = "none")
+maxsize <- maxsize + ylab("Number of Family Members")
+maxsize
